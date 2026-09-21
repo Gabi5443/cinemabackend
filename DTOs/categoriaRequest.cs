@@ -1,7 +1,7 @@
 namespace cinemabackend.DTOs;
-
-public class CategoriaRequest
-{
-    public string NomeCategoria { get; set; }
-    public string DescricaoCategoria { get; set; }
+public class Categoria 
+{ 
+  public string Nome_categoria {get; private set;}
+  public int Id_categoria {get; private set;}
+  public string Descricao_categoria {get; private set;}
 }
