@@ -1,7 +1,7 @@
 
 namespace cinemabackend.DTOs;
 
-public class CarrinhoRequest
+public record CarrinhoRequest
 {
     public int IdIngressoFk { get; set; }
     public string FormaPagamento { get; set; }
