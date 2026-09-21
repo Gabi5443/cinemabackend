@@ -1,11 +1,11 @@
 namespace cinemabackend.Models;
 
 public class Usuario {
-        private int Id {get; private set;}
-        private string Name {get; private set;}
-        private string Email {get; private set;}
-        private string Cpf {get; private set;}
-        private string Senha {get; private set;}
+        public int Id {get; private set;}
+        public string Name {get; private set;}
+        public string Email {get; private set;}
+        public string Cpf {get; private set;}
+        public string Senha {get; private set;}
        
 
         public Usuario (int id, string name){
