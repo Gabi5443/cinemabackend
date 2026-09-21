@@ -2,11 +2,11 @@ namespace cinemabackend.Models;
 
 public class Carrinho
 {
-  private int Id_carrinho {get; private set;}
-  private string Forma_pagamento {get; private set;}
-  private decimal Desconto {get; private set;}
-  private string Status {get; private set;}
-  private TimeOnly Hora_pagamento {get; private set;}
+  public int Id_carrinho {get; private set;}
+  public string Forma_pagamento {get; private set;}
+  public decimal Desconto {get; private set;}
+  public string Status {get; private set;}
+  public TimeOnly Hora_pagamento {get; private set;}
 
 
   public Carrinho (int id_carrinho, string forma_pagamento, decimal desconto, string status, TymeOnly hora_pagamento )
