@@ -1,7 +1,7 @@
 
 namespace cinemabackend.DTOs;
 
-public class LogradouroRequest
+public record LogradouroRequest
 {
     public string Rua { get; set; }
     public string Bairro { get; set; }
