@@ -9,8 +9,9 @@ public class Filme
     public string Sinopse { get; private set; } 
     public TimeOnly Duracao { get; private set; } 
     public string Subtitulo { get; private set; } 
+    public Categoria Categoria {get; private set;}
 
-    public Filme(string titulo, int id, string descricao, string sinopse, TimeOnly duracao, string subtitulo) 
+    public Filme(string titulo, int id, string descricao, string sinopse, TimeOnly duracao, string subtitulo, Categoria categoria) 
     { 
         Titulo = titulo; 
         Id = id; 
@@ -18,5 +19,6 @@ public class Filme
         Sinopse = sinopse; 
         Duracao = duracao; 
         Subtitulo = subtitulo; 
+        Categoria = categoria;
     } 
 }
