@@ -7,215 +7,173 @@ namespace cinemabackend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
-public class UsuarioController : ControllerBase{
-
+public class UsuarioController : ControllerBase
+{
     private readonly IConfiguration configuration;
 
-    public UsuarioController(IConfiguration configuration){
+    public UsuarioController(IConfiguration configuration)
+    {
         this.configuration = configuration;
     }
 
-    //Listar todos os Produtos
+    // Listar todos os Usuários
     [HttpGet]
-    public List<Usuario> Get(){
-        string connectionString = 
-            configuration.GetConnectionString("DefaultConnection")!;
+    public List<Usuario> Get()
+    {
+        string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
-        MySqlConnection connection = 
-            new MySqlConnection(connectionString);
-
+        using MySqlConnection connection = new MySqlConnection(connectionString);
         connection.Open();
 
-        string sql = "select * from usuarios";
+        string sql = "SELECT * FROM USUARIO";
 
-        MySqlCommand command = 
-            new MySqlCommand(sql, connection);
+        using MySqlCommand command = new MySqlCommand(sql, connection);
+        using MySqlDataReader reader = command.ExecuteReader();
 
-        MySqlDataReader reader = 
-            command.ExecuteReader();
-
-        List<Usuario> usuarios = 
-            new List<Usuario>();
+        List<Usuario> usuarios = new List<Usuario>();
 
         while (reader.Read())
         {
-            int id = reader.GetInt32("id");
-            string name = reader.GetString("name");
+            int id = reader.GetInt32("ID_USUARIO");
+            string name = reader.GetString("NOME_USUARIO");
 
-            Usuario usuario = 
-                new Usuario(id, name);
-
+            Usuario usuario = new Usuario(id, name);
             usuarios.Add(usuario);
         }
-
-        reader.Close();
-        command.Dispose();
-        connection.Close();
 
         return usuarios;
     }
 
-    //Listar um único Produto
+    // Listar um único Usuário
     [HttpGet("{id}")]
-    public Usuario? GetById(int id){
-        string connectionString = 
-            configuration.GetConnectionString("DefaultConnection")!;
+    public Usuario? GetById(int id)
+    {
+        string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
-        MySqlConnection connection = 
-            new MySqlConnection(connectionString);
-
+        using MySqlConnection connection = new MySqlConnection(connectionString);
         connection.Open();
 
-        string sql = "SELECT * FROM usuarios WHERE id = @id";
+        string sql = "SELECT * FROM USUARIO WHERE ID_USUARIO = @id";
 
-        MySqlCommand command = 
-            new MySqlCommand(sql, connection);
-
+        using MySqlCommand command = new MySqlCommand(sql, connection);
         command.Parameters.AddWithValue("@id", id);
 
-        MySqlDataReader reader = 
-            command.ExecuteReader();
+        using MySqlDataReader reader = command.ExecuteReader();
 
-        if(reader.Read())
+        if (reader.Read())
         {
-            int usuarioId = reader.GetInt32("id");
-            string name = reader.GetString("name");
+            int usuarioId = reader.GetInt32("ID_USUARIO");
+            string name = reader.GetString("NOME_USUARIO");
 
-            Usuario usuario = new Usuario(usuarioId, name);
-
-            return usuario;
+            return new Usuario(usuarioId, name);
         }
 
-        reader.Close();
-        command.Dispose();
-        connection.Close();
-
         return null;
-    } 
+    }  
 
-    //Cadastrar um Produto
+    // Cadastrar um Usuário
     [HttpPost]
-    public IActionResult Post(UsuarioRequest request){
-        string connectionString = 
-            configuration.GetConnectionString("DefaultConnection")!;
+    public IActionResult Post(UsuarioRequest request)
+    {
+        string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
-        MySqlConnection connection = 
-            new MySqlConnection(connectionString);
-
+        using MySqlConnection connection = new MySqlConnection(connectionString);
         connection.Open();
 
         string sql = """
-            INSERT INTO usuarios (name)
-            VALUES (@NAME);
+            INSERT INTO USUARIO (CPF_USUARIO, NOME_USUARIO, EMAIL_USUARIO, ID_LOGRADOURO_FK, SENHA_USUARIO)
+            VALUES (@cpf, @nome, @email, @id_logradouro, @senha);
             SELECT LAST_INSERT_ID();
             """;
-        using MySqlCommand command = 
-            new MySqlCommand(sql, connection);
+
+        using MySqlCommand command = new MySqlCommand(sql, connection);
         
-        command.Parameters.AddWithValue("@name", request.Name);
+        command.Parameters.AddWithValue("@cpf", request.CpfUsuario);
+        command.Parameters.AddWithValue("@nome", request.NomeUsuario);
+        command.Parameters.AddWithValue("@email", request.EmailUsuario);
+        command.Parameters.AddWithValue("@id_logradouro", request.IdLogradouroFk);
+        command.Parameters.AddWithValue("@senha", request.SenhaUsuario);
 
         int id = Convert.ToInt32(command.ExecuteScalar());
 
-        Usuario usuario = new Usuario(id, request.Name);
-
         return CreatedAtAction(
             nameof(GetById),
-            new {
-                id = usuario.Id
-            },
-            usuario
+            new { id = id },
+            request
         );
-
     }
 
-    //Alterar um Produto
-
+    // Alterar um Usuário
     [HttpPut("{ID_USUARIO}")]
-public IActionResult Update(int ID_USUARIO, [FromBody] UsuarioModel usuario)
-{
-    // 1. Abre a conexão com o MySQL
-    string connectionString = 
-        configuration.GetConnectionString("DefaultConnection")!;
-
-    // 2. Cria a conexão
-    MySqlConnection connection = 
-        new MySqlConnection(connectionString);
-
-    connection.Open();
-
-    // 3. Monta e executa o comando SQL de Update
-    // Substitua 'NOME' e 'EMAIL' pelas colunas reais da sua tabela USUARIO
-    string sql = "UPDATE USUARIO SET NOME = @nome, EMAIL = @email WHERE ID_USUARIO = @id_usuario";
- 
-    MySqlCommand comando = new MySqlCommand(sql, connection);
- 
-    comando.Parameters.AddWithValue("@id_usuario", ID_USUARIO);
-    comando.Parameters.AddWithValue("@nome", usuario.Nome);
-    comando.Parameters.AddWithValue("@email", usuario.Email);
-
-    int registrosAfetados = comando.ExecuteNonQuery();
-
-    // 4. Fecha a conexão manualmente
-    connection.Close();
-
-    // 5. Retorna o resultado
-    if (registrosAfetados == 0)
+    public IActionResult Update(int ID_USUARIO, [FromBody] UsuarioRequest usuario)
     {
-        return NotFound("Usuário não encontrado.");
+        string connectionString = configuration.GetConnectionString("DefaultConnection")!;
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            try
+            {
+                connection.Open();
+
+                string sql = @"UPDATE USUARIO 
+                               SET CPF_USUARIO = @cpf, 
+                                   NOME_USUARIO = @nome, 
+                                   EMAIL_USUARIO = @email, 
+                                   ID_LOGRADOURO_FK = @id_logradouro, 
+                                   SENHA_USUARIO = @senha 
+                               WHERE ID_USUARIO = @id_usuario";
+             
+                MySqlCommand comando = new MySqlCommand(sql, connection);
+             
+                comando.Parameters.AddWithValue("@id_usuario", ID_USUARIO);
+                comando.Parameters.AddWithValue("@cpf", usuario.CpfUsuario);
+                comando.Parameters.AddWithValue("@nome", usuario.NomeUsuario);
+                comando.Parameters.AddWithValue("@email", usuario.EmailUsuario);
+                comando.Parameters.AddWithValue("@id_logradouro", usuario.IdLogradouroFk);
+                comando.Parameters.AddWithValue("@senha", usuario.SenhaUsuario);
+
+                int registrosAfetados = comando.ExecuteNonQuery();
+
+                if (registrosAfetados == 0)
+                {
+                    return NotFound("Usuário não encontrado.");
+                }
+
+                return NoContent();
+            }
+            cmatch (MySqlException ex)
+            {
+                if (ex.Number == 1452)
+                {
+                    return BadRequest("O Logradouro informado não existe no sistema. Verifique a chave estrangeira.");
+                }
+                
+                return StatusCode(500, $"Erro no banco de dados: {ex.Message}");
+            }
+        }
     }
 
-    return NoContent(); // Retorna 204 indicando sucesso sem conteúdo adicional
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    //Deletar um Produto
+    // Deletar um Usuário
     [HttpDelete("{ID_USUARIO}")]
-    public IActionResult Delete(int ID_USUARIO){
-        // 1. Abre a conexão com o MySQL
-        string connectionString = 
-            configuration.GetConnectionString("DefaultConnection")!;
+    public IActionResult Delete(int ID_USUARIO)
+    {
+        string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
-        // 2. Cria a conexão
-        MySqlConnection connection = 
-            new MySqlConnection(connectionString);
+        using MySqlConnection connection = new MySqlConnection(connectionString);
+        connection.Open();
 
-       connection.Open();
-
-        // 3. Monta e executa o comando SQL
         string sql = "DELETE FROM USUARIO WHERE ID_USUARIO = @id_usuario";
     
         MySqlCommand comando = new MySqlCommand(sql, connection);
-    
         comando.Parameters.AddWithValue("@id_usuario", ID_USUARIO);
 
         int registrosRemovidos = comando.ExecuteNonQuery();
 
-        // 4. Fecha a conexão manualmente
-        connection.Close();
-
-        // 5. Retorna o resultado
         if (registrosRemovidos == 0)
         {
             return NotFound("Usuário não encontrado.");
         }
 
         return NoContent();
-        }
+    }
 }
