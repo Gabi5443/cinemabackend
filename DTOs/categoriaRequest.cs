@@ -1,5 +1,5 @@
 namespace cinemabackend.DTOs;
-public class Categoria 
+public record Categoria 
 { 
   public string Nome_categoria {get; private set;}
   public int Id_categoria {get; private set;}
