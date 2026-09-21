@@ -1,6 +1,6 @@
 namespace cinemabackend.DTOs;
 
-public class IngressoRequest
+public record IngressoRequest
 {
     public decimal PrecoIngresso { get; set; }
     public int IdFilmeFk { get; set; }
