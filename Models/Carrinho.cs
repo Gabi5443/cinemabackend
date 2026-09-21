@@ -7,7 +7,7 @@ public class Carrinho
   public decimal Desconto {get; private set;}
   public string Status {get; private set;}
   public TimeOnly Hora_pagamento {get; private set;}
-  public Ingresso ingresso {get;private set;}
+  public Ingresso Ingresso {get;private set;}
 
 
   public Carrinho (int id_carrinho, string forma_pagamento, decimal desconto, string status, TymeOnly hora_pagamento, Ingresso ingresso)
