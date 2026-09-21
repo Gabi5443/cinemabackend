@@ -1,6 +1,6 @@
 namespace cinemabackend.DTOs;
 
-public class FilmeRequest
+public record FilmeRequest
 {
     public string TituloFilme { get; set; }
     public string DescricaoFilme { get; set; }
