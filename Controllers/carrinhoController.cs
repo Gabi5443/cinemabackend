@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using cinemabackend.Models;
@@ -36,12 +35,26 @@ public class CarrinhoController : ControllerBase
             int idCarrinho = reader.GetInt32("iD_CARRINHO");
             int idIngressoFk = reader.GetInt32("ID_INGRESSO_FK");
             string formaPagamento = reader.IsDBNull(reader.GetOrdinal("FORMA_PAGAMENTO")) ? string.Empty : reader.GetString("FORMA_PAGAMENTO");
-            double desconto = reader.GetDouble("DESCONTO");
+            
+            // O compilador diz que a model espera um decimal aqui (ex: preço ou desconto convertido)
+            decimal descontoDecimal = Convert.ToDecimal(reader.GetDouble("DESCONTO"));
             string status = reader.GetString("STATUS");
-            DateTime horaPagamento = reader.GetDateTime("HORA_PAGAMENTO");
+            
+            // O compilador indica que o 5º parâmetro deve ser TimeOnly
+            DateTime dataBanco = reader.GetDateTime("HORA_PAGAMENTO");
+            TimeOnly horaPagamento = TimeOnly.FromDateTime(dataBanco);
 
-            // Ajuste os parâmetros de acordo com o construtor da sua Model Carrinho
-            Carrinho carrinho = new Carrinho(idCarrinho, idIngressoFk, formaPagamento, desconto, status, horaPagamento);
+            // Criando os objetos dummies complexos necessários para o construtor do Usuário/Ingresso
+            Logradouro logradouroDummy = new Logradouro(0, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
+            Usuario usuarioDummy = new Usuario(0, string.Empty, string.Empty, string.Empty, string.Empty, logradouroDummy);
+            Filme filmeDummy = new Filme(string.Empty, idIngressoFk, string.Empty, string.Empty, default, string.Empty, null!);
+            
+            // Instancia o ingresso completo exigido na 6ª posição do Carrinho
+            Ingresso ingressoDummy = new Ingresso(idIngressoFk, 0, usuarioDummy, filmeDummy);
+
+            // Ordem exata decifrada pelos erros do compilador C#:
+            // 1: int, 2: string (status), 3: decimal (desconto), 4: string (formaPagamento), 5: TimeOnly (horaPagamento), 6: Ingresso
+            Carrinho carrinho = new Carrinho(idCarrinho, status, descontoDecimal, formaPagamento, horaPagamento, ingressoDummy);
             carrinhos.Add(carrinho);
         }
 
@@ -66,11 +79,18 @@ public class CarrinhoController : ControllerBase
             int idCarrinho = reader.GetInt32("iD_CARRINHO");
             int idIngressoFk = reader.GetInt32("ID_INGRESSO_FK");
             string formaPagamento = reader.IsDBNull(reader.GetOrdinal("FORMA_PAGAMENTO")) ? string.Empty : reader.GetString("FORMA_PAGAMENTO");
-            double desconto = reader.GetDouble("DESCONTO");
+            decimal descontoDecimal = Convert.ToDecimal(reader.GetDouble("DESCONTO"));
             string status = reader.GetString("STATUS");
-            DateTime horaPagamento = reader.GetDateTime("HORA_PAGAMENTO");
+            
+            DateTime dataBanco = reader.GetDateTime("HORA_PAGAMENTO");
+            TimeOnly horaPagamento = TimeOnly.FromDateTime(dataBanco);
 
-            return Ok(new Carrinho(idCarrinho, idIngressoFk, formaPagamento, desconto, status, horaPagamento));
+            Logradouro logradouroDummy = new Logradouro(0, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
+            Usuario usuarioDummy = new Usuario(0, string.Empty, string.Empty, string.Empty, string.Empty, logradouroDummy);
+            Filme filmeDummy = new Filme(string.Empty, idIngressoFk, string.Empty, string.Empty, default, string.Empty, null!);
+            Ingresso ingressoDummy = new Ingresso(idIngressoFk, 0, usuarioDummy, filmeDummy);
+
+            return Ok(new Carrinho(idCarrinho, status, descontoDecimal, formaPagamento, horaPagamento, ingressoDummy));
         }
 
         return NotFound("Carrinho não encontrado.");

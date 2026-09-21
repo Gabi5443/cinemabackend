@@ -36,10 +36,21 @@ public class FilmeController : ControllerBase
         {
             int id = reader.GetInt32("ID_FILME");
             string titulo = reader.GetString("TITULO_FILME");
-            // Nota: Se a sua model Filme precisar de mais campos no construtor, 
-            // você pode ajustá-los aqui conforme a sua Model.
+            string descricao = reader.GetString("DESCRICAO_FILME");
+            string sinopse = reader.GetString("SINOPSE_FILME");
+            
+            // Tratamento caso a duração ou subtítulo venham nulos do banco
+            TimeOnly duracao = reader.IsDBNull(reader.GetOrdinal("DURACAO_FILME")) ? default : TimeOnly.FromTimeSpan(reader.GetTimeSpan("DURACAO_FILME"));
+            string subtitulo = reader.IsDBNull(reader.GetOrdinal("SUBTITULO_FILME")) ? string.Empty : reader.GetString("SUBTITULO_FILME");
+            
+            int idCategoriaFk = reader.GetInt32("ID_CATEGORIA_FK");
 
-            Filme filme = new Filme(id, titulo);
+            // Como o construtor pede um objeto Categoria completo, criamos um objeto temporário (dummy) com o ID coletado
+            Categoria categoriaDummy = new Categoria(string.Empty, idCategoriaFk, string.Empty);
+
+            // Montado seguindo a ordem exata exigida pelo construtor da sua Model:
+            // (string, int, string, string, TimeOnly, string, Categoria)
+            Filme filme = new Filme(titulo, id, descricao, sinopse, duracao, subtitulo, categoriaDummy);
             filmes.Add(filme);
         }
 
@@ -66,8 +77,16 @@ public class FilmeController : ControllerBase
         {
             int filmeId = reader.GetInt32("ID_FILME");
             string titulo = reader.GetString("TITULO_FILME");
+            string descricao = reader.GetString("DESCRICAO_FILME");
+            string sinopse = reader.GetString("SINOPSE_FILME");
+            
+            TimeOnly duracao = reader.IsDBNull(reader.GetOrdinal("DURACAO_FILME")) ? default : TimeOnly.FromTimeSpan(reader.GetTimeSpan("DURACAO_FILME"));
+            string subtitulo = reader.IsDBNull(reader.GetOrdinal("SUBTITULO_FILME")) ? string.Empty : reader.GetString("SUBTITULO_FILME");
+            
+            int idCategoriaFk = reader.GetInt32("ID_CATEGORIA_FK");
+            Categoria categoriaDummy = new Categoria(string.Empty, idCategoriaFk, string.Empty);
 
-            return new Filme(filmeId, titulo);
+            return new Filme(titulo, filmeId, descricao, sinopse, duracao, subtitulo, categoriaDummy);
         }
 
         return null;

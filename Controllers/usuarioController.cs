@@ -36,8 +36,18 @@ public class UsuarioController : ControllerBase
         {
             int id = reader.GetInt32("ID_USUARIO");
             string name = reader.GetString("NOME_USUARIO");
+            
+            // CORREÇÃO: Extraindo os campos adicionais exigidos pelo construtor da Model
+            string email = reader.GetString("EMAIL_USUARIO");
+            string cpf = reader.GetString("CPF_USUARIO");
+            string senha = reader.GetString("SENHA_USUARIO");
+            
+            // Instancia o logradouro temporário exigido na última posição do construtor
+            Logradouro logradouroDummy = new Logradouro(0, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
 
-            Usuario usuario = new Usuario(id, name);
+            // Passando os 6 parâmetros obrigatórios na ordem correta:
+            // (int id, string nome, string email, string cpf, string senha, Logradouro logradouro)
+            Usuario usuario = new Usuario(id, name, email, cpf, senha, logradouroDummy);
             usuarios.Add(usuario);
         }
 
@@ -64,8 +74,15 @@ public class UsuarioController : ControllerBase
         {
             int usuarioId = reader.GetInt32("ID_USUARIO");
             string name = reader.GetString("NOME_USUARIO");
+            
+            // CORREÇÃO: Extraindo os campos adicionais para o GetById
+            string email = reader.GetString("EMAIL_USUARIO");
+            string cpf = reader.GetString("CPF_USUARIO");
+            string senha = reader.GetString("SENHA_USUARIO");
+            
+            Logradouro logradouroDummy = new Logradouro(0, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
 
-            return new Usuario(usuarioId, name);
+            return new Usuario(usuarioId, name, email, cpf, senha, logradouroDummy);
         }
 
         return null;
@@ -141,7 +158,7 @@ public class UsuarioController : ControllerBase
 
                 return NoContent();
             }
-            cmatch (MySqlException ex)
+            catch (MySqlException ex)
             {
                 if (ex.Number == 1452)
                 {

@@ -9,10 +9,10 @@ public class Logradouro
    public string Rua {get; private set;}
    public string Descricao {get; private set;}
    public string Numero_casa {get; private set;}
-   public string Descricao {get; private set;}
+  
 
 
-public Logradouro (int id_logradouro, string bairro, string cep, string rua , string descricao , string numero_casa , string descricao)
+public Logradouro (int id_logradouro, string bairro, string cep, string rua , string descricao , string numero_casa)
 {
   Id_logradouro = id_logradouro;
   Bairro = bairro;
@@ -20,7 +20,7 @@ public Logradouro (int id_logradouro, string bairro, string cep, string rua , st
   Rua = rua;
   Descricao = descricao;
   Numero_casa = numero_casa;
-  Descricao = descricao;
+ 
   
 }
 

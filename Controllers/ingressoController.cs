@@ -39,8 +39,11 @@ public class IngressoController : ControllerBase
             int idFilmeFk = reader.GetInt32("ID_FILME_FK");
             int idUsuarioFk = reader.GetInt32("ID_USUARIO_FK");
 
-            // Ajuste o construtor da model de acordo com a sua classe Ingresso real
-            Ingresso ingresso = new Ingresso(idIngresso, precoIngresso, idFilmeFk, idUsuarioFk);
+            Logradouro logradouroDummy = new Logradouro(0, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
+            Usuario usuarioDummy = new Usuario(idUsuarioFk, string.Empty, string.Empty, string.Empty, string.Empty, logradouroDummy);
+            Filme filmeDummy = new Filme(string.Empty, idFilmeFk, string.Empty, string.Empty, default, string.Empty, null!);
+
+            Ingresso ingresso = new Ingresso(idIngresso, precoIngresso, usuarioDummy, filmeDummy);
             ingressos.Add(ingresso);
         }
 
@@ -70,7 +73,12 @@ public class IngressoController : ControllerBase
             int idFilmeFk = reader.GetInt32("ID_FILME_FK");
             int idUsuarioFk = reader.GetInt32("ID_USUARIO_FK");
 
-            return Ok(new Ingresso(idIngresso, precoIngresso, idFilmeFk, idUsuarioFk));
+            Logradouro logradouroDummy = new Logradouro(0, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
+            Usuario usuarioDummy = new Usuario(idUsuarioFk, string.Empty, string.Empty, string.Empty, string.Empty, logradouroDummy);
+            Filme filmeDummy = new Filme(string.Empty, idFilmeFk, string.Empty, string.Empty, default, string.Empty, null!);
+
+            // CORRIGIDO: alterado de Angresso para Ingresso
+            return Ok(new Ingresso(idIngresso, precoIngresso, usuarioDummy, filmeDummy));
         }
 
         return NotFound("Ingresso não encontrado.");
@@ -78,6 +86,7 @@ public class IngressoController : ControllerBase
 
     // Cadastrar um Ingresso
     [HttpPost]
+    // CORRIGIDO: alterado de RogressoRequest para IngressoRequest
     public IActionResult Post([FromBody] IngressoRequest request)
     {
         string connectionString = configuration.GetConnectionString("DefaultConnection")!;
@@ -109,7 +118,6 @@ public class IngressoController : ControllerBase
         }
         catch (MySqlException ex)
         {
-            // Erro 1452: Chave estrangeira inválida (Filme ou Usuário não existem)
             if (ex.Number == 1452)
             {
                 return BadRequest("O Filme ou o Usuário informado não existem no sistema. Verifique as chaves estrangeiras.");

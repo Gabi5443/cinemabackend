@@ -10,7 +10,7 @@ public class Carrinho
   public Ingresso Ingresso {get;private set;}
 
 
-  public Carrinho (int id_carrinho, string forma_pagamento, decimal desconto, string status, TymeOnly hora_pagamento, Ingresso ingresso)
+  public Carrinho (int id_carrinho, string forma_pagamento, decimal desconto, string status, TimeOnly hora_pagamento, Ingresso ingresso)
   {
     Id_carrinho = id_carrinho;
     Forma_pagamento = forma_pagamento;
