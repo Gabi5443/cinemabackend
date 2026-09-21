@@ -3,13 +3,13 @@ namespace cinemabackend.Models;
 public class Logradouro
 { 
 
-   private int Id_logradouro{get; private set;}
-   private string Bairro{get; private set;}
-   private string Cep {get; private set;}
-   private string Rua {get; private set;}
-   private string Descricao {get; private set;}
-   private string Numero_casa {get; private set;}
-   private string Descricao {get; private set;}
+   public int Id_logradouro{get; private set;}
+   public string Bairro{get; private set;}
+   public string Cep {get; private set;}
+   public string Rua {get; private set;}
+   public string Descricao {get; private set;}
+   public string Numero_casa {get; private set;}
+   public string Descricao {get; private set;}
 
 
 public Logradouro (int id_logradouro, string bairro, string cep, string rua , string descricao , string numero_casa , string descricao)
