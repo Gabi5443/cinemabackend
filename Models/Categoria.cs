@@ -2,9 +2,9 @@ namespace cinemabackend.Models;
 
 public class Categoria 
 { 
-  private string Nome_categoria {get; private set;}
-  private int Id_categoria {get; private set;}
-  private string Descricao_categoria {get; private set;}
+  public string Nome_categoria {get; private set;}
+  public int Id_categoria {get; private set;}
+  public string Descricao_categoria {get; private set;}
 
   public Categoria (string nome_categoria , int id_categoria, string descricao_categoria)
   {
